@@ -1,233 +1,92 @@
-# QuickGPT Backend API Documentation
+# QuickGPT API Documentation
 
-Base URL: `http://localhost:3000/api`
+**Version:** 1.0.0  
+**Base URL:** `http://localhost:3000/api`
+
+## Overview
+
+The QuickGPT API provides the backend infrastructure for the QuickGPT application, handling user authentication, chat management, AI text/image generation, and credit transaction processing via Stripe.
 
 ## Authentication
 
-Most routes are protected and require a valid JWT token.
-Pass the token in the `Authorization` header.
+Authentication is managed via JSON Web Tokens (JWT). Most endpoints require a valid token to be included in the request headers.
 
-**Header Format:**
+- **Header Key:** `Authorization`
+- **Header Value:** `<your_token_string>`  
+  *(Note: The current implementation accepts the raw token string without the `Bearer` prefix.)*
+
+## Response Format
+
+Standard API responses follow a consistent JSON structure:
+
+**Success:**
+```json
+{
+  "success": true,
+  "data": { ... } // or distinct keys like "token", "reply", "user"
+}
 ```
-Authorization: <your_jwt_token_string>
+
+**Error:**
+```json
+{
+  "success": false,
+  "message": "Error description here"
+}
 ```
-*(Note: Do not include "Bearer " prefix, just the token string directly)*
 
 ---
 
-## 1. User Routes (`/api/user`)
+## Endpoints
 
-### Register User
-Create a new user account.
-- **Endpoint:** `POST /api/user/register`
-- **Body:**
-  ```json
-  {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "securepassword"
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-  ```
+### 1. User Management
+Base Path: `/api/user`
 
-### Login User
-Authenticate an existing user.
-- **Endpoint:** `POST /api/user/login`
-- **Body:**
-  ```json
-  {
-    "email": "john@example.com",
-    "password": "securepassword"
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-  ```
+| Method | Endpoint            | Auth | Description                                      | Request Body Params |
+| :----- | :------------------ | :--- | :----------------------------------------------- | :------------------ |
+| `POST` | `/register`         | No   | Register a new user account.                       | `name`, `email`, `password` |
+| `POST` | `/login`            | No   | Authenticate a user and receive a JWT.           | `email`, `password` |
+| `GET`  | `/data`             | **Yes** | Retrieve profile data for the authenticated user.| N/A |
+| `GET`  | `/published-images` | No   | Fetch a feed of images published by the community.| N/A |
 
-### Get User Profile
-Get details of the currently logged-in user.
-- **Endpoint:** `GET /api/user/data`
-- **Headers:** `Authorization: <token>`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "user": {
-      "_id": "6794...",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "credits": 5,
-      ...
-    }
-  }
-  ```
+### 2. Chat Operations
+Base Path: `/api/chat`
 
-### Get Published Images
-Get a list of images published by users.
-- **Endpoint:** `GET /api/user/published-images`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "images": [
-      {
-        "imageUrl": "https://ik.imagekit.io/...",
-        "userName": "John Doe"
-      }
-    ]
-  }
-  ```
+| Method | Endpoint  | Auth | Description                                      | Request Body Params |
+| :----- | :-------- | :--- | :----------------------------------------------- | :------------------ |
+| `GET`  | `/create` | **Yes** | Initialize a new empty chat session.             | N/A |
+| `GET`  | `/get`    | **Yes** | Retrieve all chat sessions for the user.         | N/A |
+| `POST` | `/delete` | **Yes** | Delete a specific chat session.                  | `id` (Chat ID) |
+
+### 3. AI Messaging
+Base Path: `/api/message`
+
+| Method | Endpoint | Auth | Description | Request Body Params |
+| :----- | :------- | :--- | :---------- | :------------------ |
+| `POST` | `/text`  | **Yes** | Send a text prompt to the LLM (Gemini). | `chatId`, `prompt` |
+| `POST` | `/image` | **Yes** | Generate an AI image based on a prompt. | `chatId`, `prompt`, `(optional) isPublished` |
+
+### 4. Credits & Payments
+Base Path: `/api/credit`
+
+| Method | Endpoint    | Auth | Description | Request Body Params |
+| :----- | :---------- | :--- | :---------- | :------------------ |
+| `GET`  | `/plans`    | No   | Retrieve available credit purchase plans. | N/A |
+| `POST` | `/purchase` | **Yes** | Initiate a Stripe checkout session for a plan. | `planId` |
+
+### 5. Webhooks
+Base Path: `/api`
+
+| Method | Endpoint | Auth | Description | Payload |
+| :----- | :------- | :--- | :---------- | :------ |
+| `POST` | `/stripe`| No   | Handle Stripe events (e.g., `payment_intent.succeeded`). | Stripe Raw Body |
 
 ---
 
-## 2. Chat Routes (`/api/chat`)
+## Error Codes & Handling
 
-### Create New Chat
-Initialize a new chat session.
-- **Endpoint:** `GET /api/chat/create`
-- **Headers:** `Authorization: <token>`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Chat  created "
-  }
-  ```
+The API returns standard HTTP status codes. Common errors include:
 
-### Get All Chats
-Retrieve all chat sessions for the logged-in user.
-- **Endpoint:** `GET /api/chat/get`
-- **Headers:** `Authorization: <token>`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "chats": [
-      {
-        "_id": "6794...",
-        "name": "New chat",
-        "messages": [],
-        ...
-      }
-    ]
-  }
-  ```
-
-### Delete Chat
-Delete a specific chat session.
-- **Endpoint:** `POST /api/chat/delete`
-- **Headers:** `Authorization: <token>`
-- **Body:**
-  ```json
-  {
-    "id": "6794..."  // The _id of the chat to delete
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Chat deleted successfully"
-  }
-  ```
-
----
-
-## 3. Message Routes (`/api/message`)
-
-### Send Text Message
-Send a text prompt to the AI and get a text response.
-- **Endpoint:** `POST /api/message/text`
-- **Headers:** `Authorization: <token>`
-- **Body:**
-  ```json
-  {
-    "chatId": "6794...",
-    "prompt": "Hello AI, how are you?"
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "reply": {
-      "role": "model",
-      "content": "I am doing well, thank you!",
-      "timestamp": 1700000000000,
-      "isImage": false
-    }
-  }
-  ```
-
-### Generate Image
-Send a prompt to generate an image.
-- **Endpoint:** `POST /api/message/image`
-- **Headers:** `Authorization: <token>`
-- **Body:**
-  ```json
-  {
-    "chatId": "6794...",
-    "prompt": "A futuristic city skyline",
-    "isPublished": false
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "reply": {
-      "role": "assistant",
-      "content": "https://ik.imagekit.io/...",
-      "timestamp": 1700000000000,
-      "isImage": true,
-      "isPublished": false
-    }
-  }
-  ```
-
----
-
-## Step-by-Step Usage Flow
-
-Follow this sequence to test the complete flow:
-
-1.  **Register or Login:**
-    *   Send a POST request to `/api/user/register` or `/api/user/login`.
-    *   **Copy the `token`** from the response. You will need this for all subsequent steps.
-
-2.  **Create a Chat:**
-    *   Send a GET request to `/api/chat/create` with the header `Authorization: <your_token>`.
-    *   (Note: Use GET, not POST, as per current implementation).
-
-3.  **Get Chat ID:**
-    *   Send a GET request to `/api/chat/get` with the header `Authorization: <your_token>`.
-    *   Look at the response array. Pick the `_id` of the chat you just created (e.g., the first one or latest one).
-
-4.  **Send a Message:**
-    *   **Text:** Send a POST request to `/api/message/text` with `Authorization: <your_token>` and body:
-        ```json
-        {
-          "chatId": "<paste_chat_id_here>",
-          "prompt": "Tell me a joke"
-        }
-        ```
-    *   **Image:** Send a POST request to `/api/message/image` with body:
-        ```json
-        {
-          "chatId": "<paste_chat_id_here>",
-          "prompt": "A cat in space"
-        }
-        ```
-
-**Troubleshooting:**
-*   **"Cannot read properties of null (reading 'messages')"**: This happens if the `chatId` you provided in step 4 does not exist or doesn't belong to the user. Make sure you are using a valid `_id` obtained from step 3.
+- **401 Unauthorized:** Invalid or missing authentication token.
+- **404 Not Found:** Resource (e.g., Chat ID) not found.
+- **500 Internal Server Error:** Server-side processing failure.
