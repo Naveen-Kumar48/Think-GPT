@@ -80,6 +80,7 @@ export const getUser = async (req, res) => {
     }
 }
 
+
 //* API TO GET THE  PUBLISHED IMAGE
 
 export  const getPublishedImages=async (req,res)=>{
@@ -106,6 +107,6 @@ export  const getPublishedImages=async (req,res)=>{
     ])
     res.json({success:true,images:publishedImagesMessages.reverse()}) 
     } catch (error) {
-        res.json({success:false,message:error.message})
+      return res.json({success:false,message:error.message})
     }
 }

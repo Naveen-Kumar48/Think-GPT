@@ -1,6 +1,6 @@
 import Transaction from "../models/Transaction.js"
-
-const plans=[
+import Stripe from "stripe"
+const plans = [
     {
         _id: "basic",
         name: "Basic",
@@ -22,39 +22,72 @@ const plans=[
         credits: 1000,
         features: ['1000 text generations', '500 image generations', '24/7 VIP support', 'Access to premium models', 'Dedicated account manager']
     }
-]         
+]
 
 
 //* API CONTROLLER TO GET THE PLANS
-export const getPlans=async(req,res)=>{
+export const getPlans = async (req, res) => {
     try {
-        res.json({success:true,plans})
+        res.json({ success: true, plans })
     } catch (error) {
-        res.json({success:false,message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
 
-    //* API CONTROLLER TO PURCHASE A PLAN
 
-    export const purchasePlan=async(req,res)=>{
-        try {
-            const {planId}=req.body
-            const userId=req.user._id
-            const plan=plans.find(plan=>plan._id===planId)
-            if(!plan){
-                return res.json({success:false,message:"Invalid plan id"})
-            }
-             // create new transaction
-             const transaction=new Transaction.create ({
-                userId,
-                planId:plan._id,
-                amount:plan.price,
-                credits:plan.credits,
-               isPaid:false
-             })
-             
-        } catch (error) {
-            
+
+
+// creting the stripe instance
+const stripe = new Stripe(process.env.STRIPE_SECREAT_KEY)
+
+
+//* API CONTROLLER TO PURCHASE A PLAN
+
+export const purchasePlan = async (req, res) => {
+    try {
+        const { planId } = req.body
+        const userId = req.user._id
+
+        const plan = plans.find(plan => plan._id === planId)
+        if (!plan) {
+            return res.json({ success: false, message: "Invalid Plan " })
         }
+        // create new transaction
+        const transaction = await Transaction.create({
+            userId,
+            planId: plan._id,
+            amount: plan.price,
+            credits: plan.credits,
+            isPaid: false
+        })
+
+        const { origin } = req.headers
+        const session = await stripe.checkout.sessions.create({
+
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        unit_amount: plan.price * 100,
+                        product_data: {
+                            name: plan.name,
+                        },
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `${origin}/loading`,
+            cancel_url: `${origin}`,
+            metadata: {
+                transactionId: transaction._id.toString(), appId: "quickgpt"
+            },
+            expires_at: Math.floor(Date.now() / 1000) + 30 * 60,// expires in 30 minutes
+
+        });
+        return res.json({ success: true, url: session.url })
+    } catch (error) {
+        return res.json({ success: false, message: error.message })
     }
+}
