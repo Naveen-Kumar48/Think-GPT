@@ -3,16 +3,22 @@ import cors from "cors";
 import "dotenv/config";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/UserRoutes.js";
-
 import chatRouter from "./routes/chatRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
 import creditRouter from "./routes/creditRoutes.js";
+import { stripeWebhooks } from "./controllers/webhooks.js";
 
 
 
-const app = express();
 await connectDB();
-// middleware
+
+//*Stripe Webhooks
+app.post('/api/stripe',express.raw({type:'application/json'}),stripeWebhooks);  
+
+
+
+// middlewares
+
 
 app.use(cors());
 app.use(express.json());
