@@ -3,6 +3,10 @@
 **Version:** 1.0.0  
 **Base URL:** `http://localhost:3000/api`
 
+## Description
+
+QuickGPT is a full-stack AI-powered SaaS application that enables users to engage in intelligent conversations and generate creative assets. Built with the MERN stack (MongoDB, Express, React, Node.js), it integrates cutting-edge AI models to provide text generation and image synthesis capabilities. The platform features a robust credit-based system, secure user authentication, and seamless payment processing via Stripe, offering a premium and interactive experience for users to explore the power of generative AI.
+
 ## Overview
 
 The QuickGPT API provides the backend infrastructure for the QuickGPT application, handling user authentication, chat management, AI text/image generation, and credit transaction processing via Stripe.
