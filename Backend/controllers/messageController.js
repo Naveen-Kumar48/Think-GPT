@@ -57,13 +57,15 @@ export const textmessageController = async (req, res) => {
   }
 };
 
-//*Image Generation Controller
+
+
+//*Image Generation Controller mine 
 export const imageMessageController = async (req, res) => {
   try {
     const userId = req.user._id;
     //check credits
     if (req.user.credits < 2) {
-      res.json({
+     return res.json({
         success: false,
         message: "You dont have enough credits to use this Feature",
       });
@@ -130,3 +132,5 @@ export const imageMessageController = async (req, res) => {
     });
   }
 };
+
+
