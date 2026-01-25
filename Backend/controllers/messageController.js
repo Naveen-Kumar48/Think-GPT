@@ -18,14 +18,23 @@ export const textmessageController = async (req, res) => {
     }
 
     const { chatId, prompt } = req.body;
+
+    if (!chatId || !prompt) {
+      return res.json({
+        success: false,
+        message: "chatId and prompt are required",
+      });
+    }
+
     const chat = await Chat.findOne({ userId, _id: chatId });
 
     if (!chat) {
       return res.json({
         success: false,
-        message: "Chat ID not found in database. Please create a new chat first.",
+        message: "Chat not found",
       });
     }
+
     chat.messages.push({
       role: "user",
       content: prompt,
@@ -56,7 +65,7 @@ export const textmessageController = async (req, res) => {
     await chat.save();
     await User.updateOne({ _id: userId }, { $inc: { credits: -1 } });
   } catch (error) {
-    res.json({
+    return res.json({
       success: false,
       message: error.message,
     });

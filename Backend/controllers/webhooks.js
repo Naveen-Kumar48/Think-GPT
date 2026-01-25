@@ -10,10 +10,10 @@ export const stripeWebhooks = async (req, res) => {
     event = stripe.webhooks.constructEvent(
       request.body,
       sig,
-      process.process.env.STRIPE_WEBHOOK_SECREAT,
+      process.env.STRIPE_WEBHOOK_SECREAT
     );
   } catch (error) {
-    return response.status(400).send(`WebHook Error:${error.message}`);
+    return res.status(400).send(`WebHook Error:${error.message}`);
   }
   try {
     switch (event.type) {
@@ -30,16 +30,18 @@ export const stripeWebhooks = async (req, res) => {
             isPaid: false,
           });
 
-          //*update the credits in the user account
-          await User.updateOne(
-            { _id: transaction.userId },
-            { $inc: { credits: transaction.credits } },
-          );
-          //* update the payment status
-          transaction.isPaid = true;
-          await transaction.save();
+          if (transaction) {
+            //*update the credits in the user account
+            await User.updateOne(
+              { _id: transaction.userId },
+              { $inc: { credits: transaction.credits } },
+            );
+            //* update the payment status
+            transaction.isPaid = true;
+            await transaction.save();
+          }
         } else {
-          return response.json({
+          return res.json({
             received: true,
             message: "Ignored  event  Invalid  App",
           });

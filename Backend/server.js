@@ -8,20 +8,21 @@ import messageRouter from "./routes/messageRoutes.js";
 import creditRouter from "./routes/creditRoutes.js";
 import { stripeWebhooks } from "./controllers/webhooks.js";
 
-
+const app = express();
 
 await connectDB();
 
 //*Stripe Webhooks
-app.post('/api/stripe',express.raw({type:'application/json'}),stripeWebhooks);  
+app.post('/api/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
 
-
-
-// middlewares
-
-
-app.use(cors());
+// *Middlewares
 app.use(express.json());
+app.use(cors());
+
+
+
+
+
 
 
 
@@ -32,8 +33,8 @@ app.get("/", (req, res) => {
 });
 app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
-app.use("/api/message",messageRouter);
-app.use('/api/credit',creditRouter)
+app.use("/api/message", messageRouter);
+app.use('/api/credit', creditRouter)
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
