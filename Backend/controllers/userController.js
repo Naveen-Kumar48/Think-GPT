@@ -66,7 +66,7 @@ export const loginUser = async (req, res) => {
     }
 }
 
-//API to get user data
+//*API to get user data
 
 export const getUser = async (req, res) => {
     try {

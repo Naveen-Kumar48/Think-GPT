@@ -5,6 +5,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Chatbot from "./component/Chatbot";
 import { assets } from "./assets/assets"
 import Credits from "./pages/Credits";
+import Toster from 'react-hot-toast'
 import Community from "./pages/Community";
 import { useState } from 'react'
 import Message from "./component/Message";
@@ -17,17 +18,19 @@ const App = () => {
 
 
 
-  const {user}=useAppContext()
+  const {user,loadingUser}=useAppContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const {pathname}=useLocation()
-  if(pathname==='/loading') return <Loading/>
+  if(pathname==='/loading'||loadingUser) return <Loading/>
   return (
     <>
+    <Toster/>
   
       
       
       {!isMenuOpen && <img src={assets.menu_icon} className=" absolute top-3  left-8  w-8 h-8c cursor-pointer md:hidden not-dark:invert " onClick={() => { setIsMenuOpen(true) }} />}
-      {user?  (<div className="dark:bg-gradient-to-b from-[#212421] to-[#000000] dark:text-white ">
+      {user? 
+       (<div className="dark:bg-gradient-to-b from-[#212421] to-[#000000] dark:text-white ">
         
         <div className="flex h-screen w-screen">
          

@@ -4,26 +4,25 @@ import User from "../models/Usermodel.js";
 
 export const stripeWebhooks = async (req, res) => {
   const stripe = new Stripe(process.env.STRIPE_SECREAT_KEY);
-  const sig = request.headers["stripe-signature"];
+  const sig = req.headers["stripe-signature"];
   let event;
   try {
     event = stripe.webhooks.constructEvent(
-      request.body,
+      req.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECREAT
     );
   } catch (error) {
+    console.error("Webhook signature verification failed:", error.message);
     return res.status(400).send(`WebHook Error:${error.message}`);
   }
+
   try {
     switch (event.type) {
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        const sessionList = await stripe.checkout.sessions.list({
-          payment_intent: paymentIntent.id,
-        });
-        const session = sessionList.data[0];
+      case "checkout.session.completed": {
+        const session = event.data.object;
         const { transactionId, appId } = session.metadata;
+
         if (appId === "quickgpt") {
           const transaction = await Transaction.findOne({
             _id: transactionId,
@@ -41,22 +40,23 @@ export const stripeWebhooks = async (req, res) => {
             await transaction.save();
           }
         } else {
-          return res.json({
-            received: true,
-            message: "Ignored  event  Invalid  App",
-          });
+          console.log("Ignored event: Invalid App ID");
         }
+        break;
+      }
+      case "payment_intent.succeeded": {
+        // Optional: handle if needed, but checkout.session.completed is preferred for checkout flows
         break;
       }
       default:
         console.log("Unhandled event type", event.type);
         break;
     }
-    response.json({
+    res.json({
       received: true,
     });
   } catch (error) {
     console.error("Webhook processing error: ", error);
-    response.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error");
   }
 };
