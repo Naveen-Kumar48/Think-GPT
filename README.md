@@ -1,96 +1,131 @@
-# QuickGPT API Documentation
+# QuickGPT 🤖✨
 
-**Version:** 1.0.0  
-**Base URL:** `http://localhost:3000/api`
+**QuickGPT** is a powerful, full-stack AI-powered SaaS application designed to provide users with intelligent conversations and creative image synthesis. Built with the **MERN stack** (MongoDB, Express, React, Node.js), it leverages advanced AI models to deliver a seamless and premium user experience.
 
-## Description
+## 🚀 Features
 
-QuickGPT is a full-stack AI-powered SaaS application that enables users to engage in intelligent conversations and generate creative assets. Built with the MERN stack (MongoDB, Express, React, Node.js), it integrates cutting-edge AI models to provide text generation and image synthesis capabilities. The platform features a robust credit-based system, secure user authentication, and seamless payment processing via Stripe, offering a premium and interactive experience for users to explore the power of generative AI.
+- **🧠 Intelligent AI Chat**: Engage in deep, context-aware conversations with state-of-the-art LLMs (Gemini).
+- **🎨 AI Image Generation**: Create stunning, realistic images from text prompts and share them with the community.
+- **💳 Credit System**: Robust credit-based usage model integrated with secure payment processing.
+- **🔐 Secure Authentication**: Complete user registration and login system protected by JWT.
+- **💸 Stripe Integration**: Seamless secure checkout for purchasing credits.
+- **🌗 Dark/Light Mode**: Beautiful, responsive UI with automatic and manual theme toggling.
+- **📱 Fully Responsive**: Optimized experience across desktop, tablet, and mobile devices.
+- **📂 Chat History**: Automatically save, manage, and revisit your past conversations.
 
-## Overview
+## 🛠️ Tech Stack
 
-The QuickGPT API provides the backend infrastructure for the QuickGPT application, handling user authentication, chat management, AI text/image generation, and credit transaction processing via Stripe.
+### Frontend
+- **Framework**: [React.js](https://reactjs.org/) (Vite)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **State Management**: Context API
+- **Notifications**: React Hot Toast
+- **Routing**: React Router DOM
 
-## Authentication
+### Backend
+- **Runtime**: [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/) (Mongoose)
+- **Authentication**: JSON Web Tokens (JWT)
+- **Payment Gateway**: [Stripe](https://stripe.com/)
+- **AI Integration**: Google Gemini API
 
-Authentication is managed via JSON Web Tokens (JWT). Most endpoints require a valid token to be included in the request headers.
+## ⚙️ Getting Started
 
-- **Header Key:** `Authorization`
-- **Header Value:** `<your_token_string>`  
-  *(Note: The current implementation accepts the raw token string without the `Bearer` prefix.)*
+Follow these steps to set up the project locally.
 
-## Response Format
+### Prerequisites
 
-Standard API responses follow a consistent JSON structure:
+- Node.js (v18+)
+- MongoDB (Local or Atlas connection string)
+- Stripe Account (Public/Secret keys)
+- Gemini API Key
 
-**Success:**
-```json
-{
-  "success": true,
-  "data": { ... } // or distinct keys like "token", "reply", "user"
-}
-```
+### Installation
 
-**Error:**
-```json
-{
-  "success": false,
-  "message": "Error description here"
-}
-```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/QuickGPT.git
+    cd QuickGPT
+    ```
 
----
+2.  **Backend Setup**
+    Navigate to the backend folder and install dependencies:
+    ```bash
+    cd backend
+    npm install
+    ```
+    Create a `.env` file in the `backend` directory with the following variables:
+    ```env
+    PORT=3000
+    MONGODB_URI=your_mongodb_connection_string
+    JWT_SECRET=your_strong_jwt_secret
+    STRIPE_SECRET_KEY=your_stripe_secret_key
+    GEMINI_API_KEY=your_gemini_api_key
+    ```
+    Start the backend server:
+    ```bash
+    npm run server
+    ```
 
-## Endpoints
+3.  **Frontend Setup**
+    Navigate to the frontend folder and install dependencies:
+    ```bash
+    cd ../frontend
+    npm install
+    ```
+    Create a `.env` file in the `frontend` directory:
+    ```env
+   
+    ```
+    Start the development server:
+    ```bash
+    npm run dev
+    ```
 
-### 1. User Management
-Base Path: `/api/user`
+4.  **Access the App**
+    Open your browser and navigate to `http://localhost:5173` (or the port shown in your terminal).
 
-| Method | Endpoint            | Auth | Description                                      | Request Body Params |
-| :----- | :------------------ | :--- | :----------------------------------------------- | :------------------ |
-| `POST` | `/register`         | No   | Register a new user account.                       | `name`, `email`, `password` |
-| `POST` | `/login`            | No   | Authenticate a user and receive a JWT.           | `email`, `password` |
-| `GET`  | `/data`             | **Yes** | Retrieve profile data for the authenticated user.| N/A |
-| `GET`  | `/published-images` | No   | Fetch a feed of images published by the community.| N/A |
+## 📖 API Reference
 
-### 2. Chat Operations
-Base Path: `/api/chat`
 
-| Method | Endpoint  | Auth | Description                                      | Request Body Params |
-| :----- | :-------- | :--- | :----------------------------------------------- | :------------------ |
-| `GET`  | `/create` | **Yes** | Initialize a new empty chat session.             | N/A |
-| `GET`  | `/get`    | **Yes** | Retrieve all chat sessions for the user.         | N/A |
-| `POST` | `/delete` | **Yes** | Delete a specific chat session.                  | `id` (Chat ID) |
 
-### 3. AI Messaging
-Base Path: `/api/message`
+### 👤 User Management
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/user/register` | Register a new user | No |
+| `POST` | `/user/login` | Authenticate user & get token | No |
+| `GET` | `/user/data` | Get user profile & credits | **Yes** |
+| `GET` | `/user/published-images` | Get community feed images | No |
 
-| Method | Endpoint | Auth | Description | Request Body Params |
-| :----- | :------- | :--- | :---------- | :------------------ |
-| `POST` | `/text`  | **Yes** | Send a text prompt to the LLM (Gemini). | `chatId`, `prompt` |
-| `POST` | `/image` | **Yes** | Generate an AI image based on a prompt. | `chatId`, `prompt`, `(optional) isPublished` |
+### 💬 Chat Operations
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/chat/create` | Start a new chat session | **Yes** |
+| `GET` | `/chat/get` | Fetch all user chats | **Yes** |
+| `POST` | `/chat/delete` | Delete a specific chat | **Yes** |
 
-### 4. Credits & Payments
-Base Path: `/api/credit`
+### 🤖 AI Models
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/message/text` | Generate text response | **Yes** |
+| `POST` | `/message/image` | Generate AI image | **Yes** |
 
-| Method | Endpoint    | Auth | Description | Request Body Params |
-| :----- | :---------- | :--- | :---------- | :------------------ |
-| `GET`  | `/plans`    | No   | Retrieve available credit purchase plans. | N/A |
-| `POST` | `/purchase` | **Yes** | Initiate a Stripe checkout session for a plan. | `planId` |
+### 💳 Payments
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/credit/plans` | List purchase plans | No |
+| `POST` | `/credit/purchase` | Create Stripe checkout session | **Yes** |
 
-### 5. Webhooks
-Base Path: `/api`
+## 🤝 Contributing
 
-| Method | Endpoint | Auth | Description | Payload |
-| :----- | :------- | :--- | :---------- | :------ |
-| `POST` | `/stripe`| No   | Handle Stripe events (e.g., `payment_intent.succeeded`). | Stripe Raw Body |
+Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 
----
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Error Codes & Handling
+## 📄 License
 
-The API returns standard HTTP status codes. Common errors include:
-
-- **401 Unauthorized:** Invalid or missing authentication token.
-- **404 Not Found:** Resource (e.g., Chat ID) not found.
-- **500 Internal Server Error:** Server-side processing failure.
+This project is licensed under the MIT License.
