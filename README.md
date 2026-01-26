@@ -1,6 +1,6 @@
-# QuickGPT 🤖✨
+# ThinkGPT 🤖✨
 
-**QuickGPT** is a powerful, full-stack AI-powered SaaS application designed to provide users with intelligent conversations and creative image synthesis. Built with the **MERN stack** (MongoDB, Express, React, Node.js), it leverages advanced AI models to deliver a seamless and premium user experience.
+**ThinkGPT** is a powerful, full-stack AI-powered SaaS application designed to provide users with intelligent conversations and creative image synthesis. Built with the **MERN stack** (MongoDB, Express, React, Node.js), it leverages advanced AI models to deliver a seamless and premium user experience.
 
 ## 🚀 Features
 
@@ -44,8 +44,8 @@ Follow these steps to set up the project locally.
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/yourusername/QuickGPT.git
-    cd QuickGPT
+    git clone https://github.com/yourusername/ThinkGPT.git
+    cd ThinkGPT
     ```
 
 2.  **Backend Setup**
