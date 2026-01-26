@@ -3,7 +3,7 @@ import { createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { dummyChats, dummyUserData } from "../assets/assets";
 import axios from "axios";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
 const AppContext = createContext();
 
@@ -42,31 +42,31 @@ export const AppContextProvider = ({ children }) => {
       if (!user) return toast("Please login to create a new chat")
       navigate("/")
       await axios.get("/api/chat/create", { headers: { Authorization: token } })
-      await fetchUserChats() 
+      await fetchUserChats()
     } catch (error) {
       toast.error(error.message)
     }
   }
 
   const fetchUserChats = async () => {
-      try {
-        const {data}=await axios.get("/api/chat/get",{headers:{Authorization:token}})
-        if(data.success){
-          setChats(data.chats)
-          //* id the user has no chats then create a new chat
-          if(data.chats.length===0){
-            await createNewChat()
-            return fetchUserChats()
-          } else {
-            setSelectedChat(data.chats[0])
-          }
+    try {
+      const { data } = await axios.get("/api/chat/get", { headers: { Authorization: token } })
+      if (data.success) {
+        setChats(data.chats)
+        //* id the user has no chats then create a new chat
+        if (data.chats.length === 0) {
+          await createNewChat()
+          return fetchUserChats()
+        } else {
+          setSelectedChat(data.chats[0])
         }
-        else{
-          toast.error(data.message)
-        }
-      } catch (error) {
-        toast.error(error.message)
       }
+      else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   };
   useEffect(() => {
     if (theme === "dark") {
@@ -88,9 +88,9 @@ export const AppContextProvider = ({ children }) => {
 
 
   useEffect(() => {
-    if(token){
+    if (token) {
       fetchUser();
-    }else{
+    } else {
       setUser(null)
       setSelectedChat(false)
     }

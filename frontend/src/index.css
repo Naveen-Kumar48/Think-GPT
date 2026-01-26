@@ -1,11 +1,23 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
+
+@theme {
+    --color-primary: #80609F;
+    --color-secondary: #3D81F6;
+}
+
+:root {
+    color-scheme: light dark;
+}
+
 .reset-tw:not(pre):not(code) {
     all: revert;
 }
-.loader div:nth-child(2){
-animation-delay:0.2s;
+
+.loader div:nth-child(2) {
+    animation-delay: 0.2s;
 }
 
-.loader div:nth-child(3){
-animation-delay: 0.4s;
+.loader div:nth-child(3) {
+    animation-delay: 0.4s;
 }

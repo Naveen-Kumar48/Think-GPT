@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import { assets } from "../assets/assets";
 import moment from 'moment'
 import Markdown from "react-markdown";
-import { plugins } from "prismjs";
+import Prism from "prismjs";
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-jsx';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-java';
+
 function Message({ messages }) {
-  useEffect(()=>{
+  useEffect(() => {
     Prism.highlightAll()
-  },[messages.content])
+  }, [messages.content])
   return (
     <div>
       {messages.role === "user" ? (
@@ -33,12 +39,12 @@ function Message({ messages }) {
             />
           ) : (
             <div className="text-sm text-primary reset-tw">
-             
+
               <Markdown>{messages.content}</Markdown>
             </div>
           )}
 
-          <span className="text-xs text-gray-500"> {messages.timestamp}
+          <span className="text-xs text-gray-500"> {moment(messages.timestamp).fromNow()}
           </span>
         </div>
       )}

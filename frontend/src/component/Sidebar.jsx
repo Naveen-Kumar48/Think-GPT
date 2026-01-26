@@ -12,12 +12,11 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
     theme,
     user,
     navigate,
-    setUser,
     createNewChat,
     token,
     axios,
     setChats,
-    fetchUsersChats,
+    fetchUserChats,
     setToken,
   } = useAppContext();
   //* function for the logout 
@@ -37,9 +36,20 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
         headers: { Authorization: token }
       })
       if (data.success) {
-        setChats(prev => prev.filter(chat => chat._id !== chatId))
-        await fetchUsersChats()
-        window.location.reload()
+        setChats(prev => {
+          const updatedChats = prev.filter(c => c._id !== chatId);
+          // If the currently selected chat is deleted, or just to follow 'show latest' rule logic
+          // We can switch to the first available chat.
+          if (updatedChats.length > 0) {
+            setSelectedChat(updatedChats[0]);
+          } else {
+            // If no chats left, createNewChat logic in fetchUserChats will handle it, 
+            // but we can set null momentarily or let the fetch handle it.
+            setSelectedChat(null);
+          }
+          return updatedChats;
+        });
+        await fetchUserChats()
         toast.success(data.message)
       }
     } catch (error) {
@@ -65,13 +75,11 @@ transition-all duration-500 max-md:absolute left-0 z-10 ${!isMenuOpen && "max-md
 
         {/* {New Chat Button} */}
         <button
-          onClick={() => {
-            createNewChat();
-            setIsMenuOpen(false);
-          }}
-          className="flex justify-center items-centre w-full py-2 mt-10 text-white bg-gradient-to-r from-[#A456F7] to-[#3D81F6]  text-sm rounded-md cursor-pointer"
+          onClick={createNewChat}
+
+          className="flex justify-center items-center w-full py-2 mt-10 text-white bg-gradient-to-r from-[#A456F7] to-[#3D81F6]  text-sm rounded-md cursor-pointer"
         >
-          <span className="mr-2 text-xl">+</span> NewChat
+          <span className="mr-2 text-xl">+</span> New Chat
         </button>
         {/* search conversation  */}
         <div className="flex  items-center gap-2 mt-4 p-3  border  border-gray-400  dark:border-white/20 rounded-md">
@@ -108,7 +116,7 @@ transition-all duration-500 max-md:absolute left-0 z-10 ${!isMenuOpen && "max-md
                     setIsMenuOpen(false);
                   }}
                   key={chat._id}
-                  className="p-2 px-4 dark:bg-[#57317C]/10 border border-gray-300 dark:border-[#80609F]/15 rounded-md cursor-pointer group"
+                  className="relative p-2 px-4 dark:bg-[#57317C]/10 border border-gray-300 dark:border-[#80609F]/15 rounded-md cursor-pointer group"
                 >
                   <div>
                     <p className="truncate w-full">
@@ -124,7 +132,7 @@ transition-all duration-500 max-md:absolute left-0 z-10 ${!isMenuOpen && "max-md
                     <img
                       onClick={e => toast.promise(deleteChat(e, chat._id), { loading: "deleting..." })}
                       src={assets.bin_icon}
-                      className="w-4  hidden group-hover:block cursor-pointer not-dark:invert"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-4 hidden group-hover:block cursor-pointer not-dark:invert"
                       alt="delete"
                     />
                   </div>
@@ -179,7 +187,7 @@ transition-all duration-500 max-md:absolute left-0 z-10 ${!isMenuOpen && "max-md
             <p>Dark mode </p>
             <p className="text-xs  text-gray-400"> </p>
           </div>
-          <label className="relative  inline-flex  cursor-pointer">
+          <label className="relative inline-flex items-center cursor-pointer">
             <input
               onChange={() => {
                 setTheme(theme === "dark" ? "light" : "dark");
@@ -188,25 +196,26 @@ transition-all duration-500 max-md:absolute left-0 z-10 ${!isMenuOpen && "max-md
               className="sr-only peer"
               checked={theme === "dark"}
             />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
           </label>
         </div>
 
         {/* user account */}
 
-        <div className=" flex items-center gap-2  p-3 mt-4 border  border-gray-300 dark:border-white/15 rounded-md cursor-pointer hover:scale-103 transition-all group">
+        <div className="relative flex items-center gap-2  p-3 mt-4 border  border-gray-300 dark:border-white/15 rounded-md cursor-pointer hover:scale-103 transition-all group">
           <img src={assets.user_icon} alt="" className="w-4.5 bg-amber-50" />
           <div className="flex flex-col text-sm">
             <p className="flex-1 text-smd dark:text-primary truncate">
-              {user ? user.name : "Login your account"}{" "}
-              {user && (
-                <img
-                  onClick={logout}
-                  src={assets.logout_icon}
-                  className="h-5 cursor-pointer hidden not-dark:invert group-hover:block"
-                />
-              )}
+              {user ? user.name : "Login your account"}
             </p>
           </div>
+          {user && (
+            <img
+              onClick={logout}
+              src={assets.logout_icon}
+              className="absolute right-4 top-1/2 -translate-y-1/2 h-5 cursor-pointer hidden not-dark:invert group-hover:block"
+            />
+          )}
         </div>
         <img
           onClick={() => setIsMenuOpen(false)}
