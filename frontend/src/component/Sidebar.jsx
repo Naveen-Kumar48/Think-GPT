@@ -39,6 +39,7 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
       if (data.success) {
         setChats(prev => prev.filter(chat => chat._id !== chatId))
         await fetchUsersChats()
+        window.location.reload()
         toast.success(data.message)
       }
     } catch (error) {
