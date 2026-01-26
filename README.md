@@ -54,14 +54,7 @@ Follow these steps to set up the project locally.
     cd backend
     npm install
     ```
-    Create a `.env` file in the `backend` directory with the following variables:
-    ```env
-    PORT=3000
-    MONGODB_URI=your_mongodb_connection_string
-    JWT_SECRET=your_strong_jwt_secret
-    STRIPE_SECRET_KEY=your_stripe_secret_key
-    GEMINI_API_KEY=your_gemini_api_key
-    ```
+  
     Start the backend server:
     ```bash
     npm run server
