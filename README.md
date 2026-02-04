@@ -66,10 +66,6 @@ Follow these steps to set up the project locally.
     cd ../frontend
     npm install
     ```
-    Create a `.env` file in the `frontend` directory:
-    ```env
-   
-    ```
     Start the development server:
     ```bash
     npm run dev
