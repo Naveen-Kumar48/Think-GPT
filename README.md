@@ -71,49 +71,19 @@ Follow these steps to set up the project locally.
     npm run dev
     ```
 
-4.  **Access the App**
-    Open your browser and navigate to `http://localhost:5173` (or the port shown in your terminal).
+Screenshots:-
+Dark mode:-
+<img width="1919" height="920" alt="image" src="https://github.com/user-attachments/assets/3ad64f7a-57e5-4831-9e61-997cef45b108" />
+Light mode:-
+![Uploading image.png…]()
 
-## 📖 API Reference
 
 
-
-### 👤 User Management
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/user/register` | Register a new user | No |
-| `POST` | `/user/login` | Authenticate user & get token | No |
-| `GET` | `/user/data` | Get user profile & credits | **Yes** |
-| `GET` | `/user/published-images` | Get community feed images | No |
-
-### 💬 Chat Operations
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/chat/create` | Start a new chat session | **Yes** |
-| `GET` | `/chat/get` | Fetch all user chats | **Yes** |
-| `POST` | `/chat/delete` | Delete a specific chat | **Yes** |
-
-### 🤖 AI Models
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/message/text` | Generate text response | **Yes** |
-| `POST` | `/message/image` | Generate AI image | **Yes** |
-
-### 💳 Payments
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/credit/plans` | List purchase plans | No |
-| `POST` | `/credit/purchase` | Create Stripe checkout session | **Yes** |
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## 📄 License
 
