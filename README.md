@@ -75,7 +75,8 @@ Screenshots:-
 Dark mode:-
 <img width="1919" height="920" alt="image" src="https://github.com/user-attachments/assets/3ad64f7a-57e5-4831-9e61-997cef45b108" />
 Light mode:-
-![Uploading image.png…]()
+<img width="1919" height="929" alt="image" src="https://github.com/user-attachments/assets/0dfa570e-292d-42c0-89fc-bf0ac6c65ea7" />
+
 
 
 
